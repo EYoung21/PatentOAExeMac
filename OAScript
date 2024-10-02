@@ -1,0 +1,104 @@
+from PyPDF2 import PdfReader
+
+#pdf
+
+#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
+# Get the user input for the PDF file path
+
+
+# user_input = input("Which file would you like to examine? ")
+
+# try:
+#     # Open the PDF file
+#     reader = PdfReader(user_input)
+
+#     # Check if the PDF has at least one page
+#     if len(reader.pages) > 0:
+#         # Get the first page
+#         page = reader.pages[0]
+
+#         # Extract and print the text from the first page
+#         text = page.extract_text()
+        
+#         if text:  # Check if text extraction was successful
+#             print(text)
+#         else:
+#             print("No text found on the first page.")
+#     else:
+#         print("The PDF has no pages.")
+
+# except FileNotFoundError:
+#     print(f"The file '{user_input}' was not found.")
+# except Exception as e:
+#     print(f"An error occurred: {e}")
+
+
+
+#pdf2
+
+# import pdfplumber
+
+# # Get the user input for the PDF file path
+# user_input = input("Which PDF file would you like to examine? ")
+
+# try:
+#     with pdfplumber.open(user_input) as pdf:
+#         # Check if the PDF has at least one page
+#         if len(pdf.pages) > 0:
+#             # Get the first page
+#             page = pdf.pages[0]
+
+#             # Extract and print the text from the first page
+#             text = page.extract_text()
+            
+#             if text:  # Check if text extraction was successful
+#                 print(text)
+#             else:
+#                 print("No text found on the first page.")
+#         else:
+#             print("The PDF has no pages.")
+
+# except FileNotFoundError:
+#     print(f"The file '{user_input}' was not found.")
+# except Exception as e:
+#     print(f"An error occurred: {e}")
+
+
+
+
+
+
+
+
+#doc
+
+#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674a_WB-202010-014-1_Response Office Action.docx
+
+
+
+# from docx import Document
+
+# # Get the user input for the Word document file path
+# user_input = input("Which Word file would you like to examine? ")
+
+# try:
+#     # Open the Word document
+#     doc = Document(user_input)
+
+#     # Initialize a variable to hold the extracted text
+#     text = ""
+
+#     # Iterate through the paragraphs in the document
+#     for para in doc.paragraphs:
+#         text += para.text + "\n"  # Add each paragraph's text and a newline for separation
+
+#     # Check if any text was extracted
+#     if text.strip():  # Only print if there's text
+#         print(text)
+#     else:
+#         print("No text found in the document.")
+
+# except FileNotFoundError:
+#     print(f"The file '{user_input}' was not found.")
+# except Exception as e:
+#     print(f"An error occurred: {e}")
