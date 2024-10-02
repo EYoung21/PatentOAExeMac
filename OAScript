@@ -1,10 +1,16 @@
-from PyPDF2 import PdfReader
+# from PyPDF2 import PdfReader
 
-#pdf
+# #pdf
 
-#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
-# Get the user input for the PDF file path
+# #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
+# # Get the user input for the PDF file path
 
+
+
+# #data outputs
+# #summary
+
+# #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
 
 # user_input = input("Which file would you like to examine? ")
 
@@ -31,6 +37,56 @@ from PyPDF2 import PdfReader
 #     print(f"The file '{user_input}' was not found.")
 # except Exception as e:
 #     print(f"An error occurred: {e}")
+
+
+#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
+
+import fitz  # PyMuPDF
+from PIL import Image
+import pytesseract
+import io
+
+user_input = input("Which file would you like to examine? ")
+
+try:
+    # Open the PDF file
+    pdf_document = fitz.open(user_input)
+
+    # Check if the PDF has at least one page
+    if pdf_document.page_count > 0:
+        # Get the first page
+        page = pdf_document[0]
+
+        # Try extracting text
+        text = page.get_text("text")
+        if text:
+            print("Extracted Text:")
+            print(text)
+        else:
+            # If no text found, check for images
+            print("No text found. Checking for images...")
+            image_list = page.get_images(full=True)
+
+            if image_list:
+                for img_index, img in enumerate(image_list, start=1):
+                    # Extract the image bytes
+                    base_image = pdf_document.extract_image(img[0])
+                    image_bytes = base_image["image"]
+
+                    # Convert to a PIL Image
+                    image = Image.open(io.BytesIO(image_bytes))
+
+                    # Apply OCR to the image
+                    ocr_text = pytesseract.image_to_string(image)
+                    print(f"Text extracted from image {img_index}:")
+                    print(ocr_text)
+    else:
+        print("The PDF has no pages.")
+
+except FileNotFoundError:
+    print(f"The file '{user_input}' was not found.")
+except Exception as e:
+    print(f"An error occurred: {e}")
 
 
 
@@ -73,6 +129,11 @@ from PyPDF2 import PdfReader
 #doc
 
 #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674a_WB-202010-014-1_Response Office Action.docx
+
+
+#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.docx
+
+#/Users/eliyoung/Desktop/Yoni 1 OA Test/124044_17225083_06-27-2024_CTNF.docx
 
 
 
