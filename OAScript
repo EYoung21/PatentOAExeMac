@@ -2,9 +2,14 @@
 #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
 
 
-
+#WORKS FOR THIS ONE
 #/Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf
 
+#/Users/eliyoung/Desktop/PatentOAs/1535-727_WB-202105-023-1_Final Office Action2.pdf
+
+#/Users/eliyoung/Desktop/PatentOAs/1535-757 WB-202109-017-1 Office Action.pdf
+
+#/Users/eliyoung/Desktop/PatentOAs/1535-806 WB-202202-012-1 Office Action.pdf
 import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
@@ -145,6 +150,8 @@ class Solution():
 obj = Solution()
 
 ocr = obj.getInputAndExtractImageText()
+
+
 textArr = obj.splitReturnArray(ocr)
 
 obj.putSpecificDataValuesInDictionary(textArr)
