@@ -31,8 +31,12 @@ etelemetry==0.3.1
     # via nipype
 filelock==3.16.1
     # via nipype
+fire==0.7.0
+    # via pdf2docx
 fitz==0.0.1.dev2
     # via yoni-patent-project
+fonttools==4.54.1
+    # via pdf2docx
 httplib2==0.22.0
     # via fitz
 idna==3.10
@@ -57,8 +61,12 @@ numpy==2.1.1
     # via fitz
     # via nibabel
     # via nipype
+    # via opencv-python-headless
     # via pandas
+    # via pdf2docx
     # via scipy
+opencv-python-headless==4.10.0.84
+    # via pdf2docx
 packaging==24.1
     # via etelemetry
     # via nibabel
@@ -68,6 +76,8 @@ pandas==2.2.3
     # via fitz
 pathlib==1.0.1
     # via pyxnat
+pdf2docx==0.5.8
+    # via yoni-patent-project
 pdfminer-six==20231228
     # via pdfplumber
 pdfplumber==0.11.4
@@ -83,6 +93,7 @@ pycparser==2.22
 pydot==3.0.2
     # via nipype
 pymupdf==1.24.10
+    # via pdf2docx
     # via yoni-patent-project
 pymupdfb==1.24.10
     # via pymupdf
@@ -101,6 +112,7 @@ python-dateutil==2.9.0.post0
     # via pandas
     # via prov
 python-docx==1.1.2
+    # via pdf2docx
     # via yoni-patent-project
 pytz==2024.2
     # via pandas
@@ -120,6 +132,8 @@ simplejson==3.19.3
 six==1.16.0
     # via isodate
     # via python-dateutil
+termcolor==2.4.0
+    # via fire
 traits==6.3.2
     # via nipype
 typing-extensions==4.12.2

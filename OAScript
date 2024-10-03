@@ -9,6 +9,11 @@ import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
 import io
+from pdf2docx import Converter
+import docx
+import os
+from docx import Document
+
 
 class Solution():
 
@@ -26,12 +31,12 @@ class Solution():
 
             user_input = self.returnUserInput()
 
-            pdf_document = fitz.open(user_input)
+            self.pdf_document = fitz.open(user_input)
 
             # Check if the PDF has at least one page
-            if pdf_document.page_count > 0:
+            if self.pdf_document.page_count > 0:
                 # Get the first page
-                page = pdf_document[0]
+                page = self.pdf_document[0]
 
                 # Try extracting text
 
@@ -47,7 +52,7 @@ class Solution():
                 if image_list:
                     for img_index, img in enumerate(image_list, start=1):
                         # Extract the image bytes
-                        base_image = pdf_document.extract_image(img[0])
+                        base_image = self.pdf_document.extract_image(img[0])
                         image_bytes = base_image["image"]
 
                         # Convert to a PIL Image
@@ -74,24 +79,64 @@ class Solution():
         print("imagetxt as arr: " + str(textArr))
         return textArr
 
-    # def returnSpecificDataValuesAsDictionary(self, arrInput):
-    #     #assuming all array indices will be default
+    def putSpecificDataValuesInDictionary(self, arrInput):
+        #assuming all array indices will be default
 
-    #     self.applicationID = arrInput[22] #gets applicationID
+        applicationID = arrInput[22] #gets applicationID
 
-    #     refField = arrInput[27].split("-")
+        refField = arrInput[27].split("-")
 
-    #     self.refNo = refField[1] #gets refNo
-    #     self.dueDate = arrInput[47]
+        refNo = refField[1] #gets refNo
+        dueDate = arrInput[47]
 
-    #     examinerNameArr = [arrInput[42], arrInput[41]]
+        examinerNameArr = [arrInput[42], arrInput[41]]
 
-    #     examinerNameStr = ""
-    #     examinerNameStr += arrInput[42]
-    #     examinerNameStr += " "
-    #     examinerNameStr += arrInput[41]
+        examinerNameStr = ""
+        examinerNameStr += arrInput[42]
+        examinerNameStr += " "
+        examinerNameStr += arrInput[41]
 
-    #     self.examinerName = examinerNameStr
+        self.examinerName = examinerNameStr
+
+        self.fieldsToValues = dict()
+        self.fieldsToValues["ID"] = applicationID
+        self.fieldsToValues["refNumber"] = refNo
+        self.fieldsToValues["dueDate"] = dueDate
+        self.fieldsToValues["examinername"] = examinerNameStr
+        #still need examiner phone number
+
+    def convert_pdf_to_docx(self, docName): #issue here
+        cv = Converter(self.user_input) #this is the name of pdf from userInput
+        cv.convert(docName, start=0, end=None)
+        cv.close()
+
+    def extractFromDoc(self, docName):
+        # doc = docx.Document(docName)
+        try:
+            # Open the Word document
+            doc = Document(docName)
+
+            # Initialize a variable to hold the extracted text
+            text = ""
+
+            # Iterate through the paragraphs in the document
+            for para in doc.paragraphs:
+                text += para.text + "\n"  # Add each paragraph's text and a newline for separation
+
+            # Check if any text was extracted
+            if text.strip():  # Only print if there's text
+                print(text)
+            else:
+                print("No text found in the document.")
+
+        except FileNotFoundError:
+            print(f"The file '{self.user_input}' was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+
+
+
 
 
 
@@ -100,4 +145,44 @@ class Solution():
 obj = Solution()
 
 ocr = obj.getInputAndExtractImageText()
-obj.splitReturnArray(ocr)
+textArr = obj.splitReturnArray(ocr)
+
+obj.putSpecificDataValuesInDictionary(textArr)
+
+print(str(obj.fieldsToValues))
+
+
+# docName = "pdfNowDoc"
+
+# obj.convert_pdf_to_docx(docName)
+
+# obj.extractFromDoc(docName)
+
+#code to parse doc:
+
+# from docx import Document
+
+# # Get the user input for the Word document file path
+# user_input = input("Which Word file would you like to examine? ")
+
+# try:
+#     # Open the Word document
+#     doc = Document(user_input)
+
+#     # Initialize a variable to hold the extracted text
+#     text = ""
+
+#     # Iterate through the paragraphs in the document
+#     for para in doc.paragraphs:
+#         text += para.text + "\n"  # Add each paragraph's text and a newline for separation
+
+#     # Check if any text was extracted
+#     if text.strip():  # Only print if there's text
+#         print(text)
+#     else:
+#         print("No text found in the document.")
+
+# except FileNotFoundError:
+#     print(f"The file '{user_input}' was not found.")
+# except Exception as e:
+#     print(f"An error occurred: {e}")
