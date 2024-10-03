@@ -1,165 +1,103 @@
-# from PyPDF2 import PdfReader
-
-# #pdf
-
-# #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
-# # Get the user input for the PDF file path
-
-
-
-# #data outputs
-# #summary
-
-# #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
-
-# user_input = input("Which file would you like to examine? ")
-
-# try:
-#     # Open the PDF file
-#     reader = PdfReader(user_input)
-
-#     # Check if the PDF has at least one page
-#     if len(reader.pages) > 0:
-#         # Get the first page
-#         page = reader.pages[0]
-
-#         # Extract and print the text from the first page
-#         text = page.extract_text()
-        
-#         if text:  # Check if text extraction was successful
-#             print(text)
-#         else:
-#             print("No text found on the first page.")
-#     else:
-#         print("The PDF has no pages.")
-
-# except FileNotFoundError:
-#     print(f"The file '{user_input}' was not found.")
-# except Exception as e:
-#     print(f"An error occurred: {e}")
-
 
 #/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
+
+
+
+#/Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf
 
 import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
 import io
 
-user_input = input("Which file would you like to examine? ")
+class Solution():
 
-try:
-    # Open the PDF file
-    pdf_document = fitz.open(user_input)
+    def __init__(self):
+        pass
 
-    # Check if the PDF has at least one page
-    if pdf_document.page_count > 0:
-        # Get the first page
-        page = pdf_document[0]
-
-        # Try extracting text
-        text = page.get_text("text")
-        if text:
-            print("Extracted Text:")
-            print(text)
-        else:
-            # If no text found, check for images
-            print("No text found. Checking for images...")
-            image_list = page.get_images(full=True)
-
-            if image_list:
-                for img_index, img in enumerate(image_list, start=1):
-                    # Extract the image bytes
-                    base_image = pdf_document.extract_image(img[0])
-                    image_bytes = base_image["image"]
-
-                    # Convert to a PIL Image
-                    image = Image.open(io.BytesIO(image_bytes))
-
-                    # Apply OCR to the image
-                    ocr_text = pytesseract.image_to_string(image)
-                    print(f"Text extracted from image {img_index}:")
-                    print(ocr_text)
-    else:
-        print("The PDF has no pages.")
-
-except FileNotFoundError:
-    print(f"The file '{user_input}' was not found.")
-except Exception as e:
-    print(f"An error occurred: {e}")
+    def returnUserInput(self):
+        self.user_input = input("Which file would you like to examine? ")
+        return self.user_input
 
 
+    def getInputAndExtractImageText(self):
+        try:
+            # Open the PDF file
 
-#pdf2
+            user_input = self.returnUserInput()
 
-# import pdfplumber
+            pdf_document = fitz.open(user_input)
 
-# # Get the user input for the PDF file path
-# user_input = input("Which PDF file would you like to examine? ")
+            # Check if the PDF has at least one page
+            if pdf_document.page_count > 0:
+                # Get the first page
+                page = pdf_document[0]
 
-# try:
-#     with pdfplumber.open(user_input) as pdf:
-#         # Check if the PDF has at least one page
-#         if len(pdf.pages) > 0:
-#             # Get the first page
-#             page = pdf.pages[0]
+                # Try extracting text
 
-#             # Extract and print the text from the first page
-#             text = page.extract_text()
-            
-#             if text:  # Check if text extraction was successful
-#                 print(text)
-#             else:
-#                 print("No text found on the first page.")
-#         else:
-#             print("The PDF has no pages.")
+                # text = page.get_text("text")
+                # if text:
+                #     print("Extracted Text:")
+                #     print(text)
+                # else:
+                    # If no text found, check for images
+                print("No text found. Checking for images...")
+                image_list = page.get_images(full=True)
 
-# except FileNotFoundError:
-#     print(f"The file '{user_input}' was not found.")
-# except Exception as e:
-#     print(f"An error occurred: {e}")
+                if image_list:
+                    for img_index, img in enumerate(image_list, start=1):
+                        # Extract the image bytes
+                        base_image = pdf_document.extract_image(img[0])
+                        image_bytes = base_image["image"]
 
+                        # Convert to a PIL Image
+                        image = Image.open(io.BytesIO(image_bytes))
 
+                        # Apply OCR to the image
+                        ocr_text = pytesseract.image_to_string(image)
+                        print(f"Text extracted from image {img_index}:")
+                        print(ocr_text)
 
+                        return ocr_text
+                else:
+                    print("no image_list")
+            else:
+                print("The PDF has no pages.")
 
+        except FileNotFoundError:
+            print(f"The file '{user_input}' was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+    
+    def splitReturnArray(self, stringInput):
+        textArr = stringInput.split()
+        print("imagetxt as arr: " + str(textArr))
+        return textArr
 
+    # def returnSpecificDataValuesAsDictionary(self, arrInput):
+    #     #assuming all array indices will be default
 
+    #     self.applicationID = arrInput[22] #gets applicationID
 
+    #     refField = arrInput[27].split("-")
 
-#doc
+    #     self.refNo = refField[1] #gets refNo
+    #     self.dueDate = arrInput[47]
 
-#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674a_WB-202010-014-1_Response Office Action.docx
+    #     examinerNameArr = [arrInput[42], arrInput[41]]
 
+    #     examinerNameStr = ""
+    #     examinerNameStr += arrInput[42]
+    #     examinerNameStr += " "
+    #     examinerNameStr += arrInput[41]
 
-#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.docx
-
-#/Users/eliyoung/Desktop/Yoni 1 OA Test/124044_17225083_06-27-2024_CTNF.docx
+    #     self.examinerName = examinerNameStr
 
 
 
-# from docx import Document
 
-# # Get the user input for the Word document file path
-# user_input = input("Which Word file would you like to examine? ")
 
-# try:
-#     # Open the Word document
-#     doc = Document(user_input)
+obj = Solution()
 
-#     # Initialize a variable to hold the extracted text
-#     text = ""
-
-#     # Iterate through the paragraphs in the document
-#     for para in doc.paragraphs:
-#         text += para.text + "\n"  # Add each paragraph's text and a newline for separation
-
-#     # Check if any text was extracted
-#     if text.strip():  # Only print if there's text
-#         print(text)
-#     else:
-#         print("No text found in the document.")
-
-# except FileNotFoundError:
-#     print(f"The file '{user_input}' was not found.")
-# except Exception as e:
-#     print(f"An error occurred: {e}")
+ocr = obj.getInputAndExtractImageText()
+obj.splitReturnArray(ocr)
