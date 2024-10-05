@@ -1,3 +1,6 @@
+#ask Yoni:
+#provide more (20-50) example pdfs
+#ask how I could figure out the type of an OA
 
 
 import fitz  # PyMuPDF
@@ -11,20 +14,21 @@ from docx import Document
 import re
 from pypdf import PdfReader
 import pypandoc
+import csv
 
 class Solution():
 
     def __init__(self):
         pass
 
-    def defineUserInput(self):
-        self.user_input = input("Which file would you like to examine? ")
-        return self.user_input
+    # def defineUserInput(self):
+    #     self.user_input = input("Which file would you like to examine? ")
+    #     return self.user_input
 
 
-    def extract_text_from_pdf(self):
-        user_input = self.defineUserInput()
-        pdf_document = fitz.open(user_input)
+    def extract_text_from_pdf(self, PDFPath):
+        
+        pdf_document = fitz.open(PDFPath)
 
         extracted_text = ""
         
@@ -64,7 +68,6 @@ class Solution():
         reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"
         due_date_pattern = r"\d{2}/\d{2}/\d{4}"
         examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"
-        telephone_pattern = r"whose\s+telephone\s+number\s+is\s*(?:\(?\d{3}\)?[-.\s]?){2}\d{4}"
 
         # Updated telephone pattern to handle line breaks
         updated_telephone_pattern = r"whose\s+telephone\s+number\s+is\s*(?:\(?\d{3}\)?[-.\s]?\n?){2}\d{4}"
@@ -82,19 +85,7 @@ class Solution():
         self.dueDate = dateMatches[1] if len(dateMatches) > 1 else None
         self.examinerName = examiner_name_match[0] if examiner_name_match else None
         self.phone_numbers = [re.sub(r'\s+', '', phone) for phone in phones]  # Clean up extracted phone numbers
-        # print(str(self.phone_numbers))
         self.total_refs = refMatches
-
-        # # Debug prints
-        # print(f"\nApplication ID: {self.applicationID}")
-        # print(f"Reference Number: {self.refrenceNumber}")
-        # print(f"Due Date: {self.dueDate}")
-        # print(f"Examiner Name: {self.examinerName}")
-        # print(f"Phone numbers found: {self.phone_numbers}")
-        # print(f"Total references: {self.total_refs}")
-
-
-
 
 
 #   /Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf   #didnt pickup phone #
@@ -106,80 +97,112 @@ class Solution():
 
 
 
+# Specify the directory name with a full or relative path
+# import os
+
+# Get the user's home directory
+home_directory = os.path.expanduser("~")
+
+# Construct the Desktop path
+desktop_path = os.path.join(home_directory, "Desktop")
+
+# Specify the directory name
+directory_name = os.path.join(desktop_path, "OAInfoParentFolder")
+
+# Create the directory
+try:
+    os.makedirs(directory_name)  # Use os.mkdir(directory_name) for a single directory
+    print(f"Directory '{directory_name}' created successfully on Desktop.")
+except FileExistsError:
+    print(f"Directory '{directory_name}' already exists.")
+except Exception as e:
+    print(f"An error occurred: {e}")
 
 
-obj = Solution()
+# Define the CSV file path
+csv_file_path = os.path.join(directory_name, "data.csv")
+# Define the header and rows
+header = ["Appl. No", "Ref. No.", "Due Date", "Due Date", "IHC", "G", "Examiner's Name", "Examiner's Phone Number"]  # Example column names
+rows = [
+    # ["Row1-Value1", "Row1-Value2", "Row1-Value3"],
+    # ["Row2-Value1", "Row2-Value2", "Row2-Value3"],
+    # ["Row3-Value1", "Row3-Value2", "Row3-Value3"],
+]
 
-text = obj.extract_text_from_pdf()
+directory = input("Paste the path to the folder of OA PDFs you're looking at: ")
+#gets input
+for filename in os.listdir(directory):
+    f = os.path.join(directory, filename)
+    # checking if it is a file
+    if os.path.isfile(f):
 
-# normalized_text = re.sub(r'\s+', ' ', text)
+        # Define the parent folder name
+        parent_folder = "PatentOAs"
 
-obj.defineREGEX(text)
+        # Get the absolute path
+        absolute_path = os.path.abspath(f)
 
-# print(text)
-print("ID: " + str(obj.applicationID))
-print("Refrence #: " + str(obj.refrenceNumber))
-print("DueDate: " + str(obj.dueDate))
+        # Split the path into components
+        path_parts = absolute_path.split(os.path.sep)
 
-if obj.examinerName:
-    arr = obj.examinerName.split(",")
-    examinerRealName = ""
-    examinerRealName += arr[1]
-    examinerRealName += " "
-    examinerRealName += arr[0]
-print("Examiner name: " + examinerRealName)
-
-# print("All refrences: " + str(obj.total_refs))
-# print("Phone #s: " + str(obj.phone_numbers))
-
-if obj.phone_numbers:
-    examinerNumber = str(obj.phone_numbers)[24:-2]
-    print("Examiner #: " + examinerNumber)
-
-
-
-
-#older maybe needed functions?
+        # Find the index of the parent folder
+        if parent_folder in path_parts:
+            parent_index = path_parts.index(parent_folder)
+            # Get the last segment after the parent folder
+            if parent_index + 1 < len(path_parts):
+                subfolder_name = path_parts[-1]  # This is the last part of the path
+            else:
+                subfolder_name = ""
+        else:
+            subfolder_name = ""
 
 
-    # def convert_pdf_to_docx(self, docname):
-    #     pdf_file = self.user_input  # Input PDF file path
-    #     docx_file = docname  # Output Word file path
+        subfolder_name = str("MATERIALS FOR " + str(subfolder_name))
+        subfolder_path = os.path.join(directory_name, subfolder_name)
+        try:
+            os.makedirs(subfolder_path)  # Use os.mkdir(directory_name) for a single directory
+            print(f"Directory '{subfolder_path}' created successfully on Desktop.")
+        except FileExistsError:
+            print(f"Directory '{subfolder_path}' already exists.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
-    #     print(f"Converting '{pdf_file}' to '{docx_file}'...")
         
-    #     # Create a PDF to DOCX converter
-    #     cv = Converter(pdf_file)
-    #     try:
-    #         cv.convert(docx_file, start=0, end=None)  # Convert PDF to DOCX
-    #         print(f"Conversion successful: '{docx_file}' created.")
-    #     except Exception as e:
-    #         print(f"An error occurred during conversion: {e}")
-    #     finally:
-    #         cv.close()  # Close the converter
 
-    #     return docx_file
-        
-    # def extractFromDoc(self, docName):
-    #     # doc = docx.Document(docName)
-    #     try:
-    #         # Open the Word document
-    #         doc = Document(docName)
+        #f is pdfname
+        obj = Solution()
 
-    #         # Initialize a variable to hold the extracted text
-    #         text = ""
+        text = obj.extract_text_from_pdf(f)
 
-    #         # Iterate through the paragraphs in the document
-    #         for para in doc.paragraphs:
-    #             text += para.text + "\n"  # Add each paragraph's text and a newline for separation
+        obj.defineREGEX(text)
 
-    #         # Check if any text was extracted
-    #         if text.strip():  # Only print if there's text
-    #             print(text)
-    #         else:
-    #             print("No text found in the document.")
+        print("ID: " + str(obj.applicationID))
+        print("Refrence #: " + str(obj.refrenceNumber))
+        print("DueDate: " + str(obj.dueDate))
 
-    #     except FileNotFoundError:
-    #         print(f"The file '{self.user_input}' was not found.")
-    #     except Exception as e:
-    #         print(f"An error occurred: {e}")
+        if obj.examinerName:
+            arr = obj.examinerName.split(",")
+            examinerRealName = ""
+            examinerRealName += arr[1]
+            examinerRealName += " "
+            examinerRealName += arr[0]
+        print("Examiner name: " + examinerRealName)
+
+        # print("All refrences: " + str(obj.total_refs))
+        # print("Phone #s: " + str(obj.phone_numbers))
+
+        if obj.phone_numbers:
+            examinerNumber = str(obj.phone_numbers)[24:-2]
+            print("Examiner #: " + examinerNumber)
+
+        rows.append([obj.applicationID, obj.refrenceNumber, "", obj.dueDate, "", "", examinerRealName, examinerNumber])
+
+# Create the CSV file and write the header and rows
+try:
+    with open(csv_file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)  # Write the header
+        writer.writerows(rows)    # Write the rows
+    print(f"CSV file '{csv_file_path}' created successfully with header and rows.")
+except Exception as e:
+    print(f"An error occurred while creating the CSV file: {e}")
