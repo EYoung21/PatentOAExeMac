@@ -61,9 +61,10 @@ class Solution():
         reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"               # Matches the reference number in the format 1535-674
         due_date_pattern = r"\d{2}/\d{2}/\d{4}"                 # Matches the date
         examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"      # Matches the examiner name in uppercase letters
+        telephone_pattern = r"whose telephone number is\s+(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})"
 
         application_id = re.findall(application_id_pattern, stringInput)
-
+        phones = re.findall(telephone_pattern, stringInput)
         refMatches = re.findall(reference_number_pattern, stringInput)
         dateMatches = re.findall(due_date_pattern, stringInput) #finds all dates in file and returns array
 
@@ -75,8 +76,9 @@ class Solution():
         self.refrenceNumber = refMatches[1]
         self.dueDate = dateMatches[1]
         self.examinerName = examiner_name_match[0]
+        self.phone_numbers = phones
 
-        self.total_refs = refMatches[2:]
+        self.total_refs = refMatches
 
 
 
@@ -99,16 +101,14 @@ text = obj.extract_text_from_pdf()
 
 obj.defineREGEX(text)
 
-# print(text)
+print(text)
 print("ID: " + str(obj.applicationID))
 print("Refrence #: " + str(obj.refrenceNumber))
 print("DueDate: " + str(obj.dueDate))
 print("Examiner name: " + str(obj.examinerName))
 print("All refrences: " + str(obj.total_refs))
 
-
-
-
+print("Phone #s: " + str(obj.phone_numbers))
 
 
 #older maybe needed functions?
