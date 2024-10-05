@@ -55,27 +55,28 @@ class Solution():
 
         return extracted_text
     
-    def putSpecificREValuesInDictionary(self, stringInput):
+    def defineREGEX(self, stringInput):
         
         application_id_pattern = r"\d{2}/\d{3},\d{3}"          # Matches the application ID
         reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"               # Matches the reference number in the format 1535-674
         due_date_pattern = r"\d{2}/\d{2}/\d{4}"                 # Matches the date
         examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"      # Matches the examiner name in uppercase letters
 
-        application_id = re.search(application_id_pattern, stringInput)
-        reference_number = re.search(reference_number_pattern, stringInput)
+        application_id = re.findall(application_id_pattern, stringInput)
 
         refMatches = re.findall(reference_number_pattern, stringInput)
         dateMatches = re.findall(due_date_pattern, stringInput) #finds all dates in file and returns array
 
         # due_date = re.search(due_date_pattern, stringInput)
-        examiner_name = re.search(examiner_name_pattern, stringInput)
+        examiner_name_match = re.findall(examiner_name_pattern, stringInput)
 
-        self.fieldsToValues = dict()
-        self.fieldsToValues["ID"] = application_id
-        self.fieldsToValues["refNumber"] = refMatches
-        self.fieldsToValues["dueDate"] = dateMatches
-        self.fieldsToValues["examinername"] = examiner_name
+        # self.fieldsToValues = dict()
+        self.applicationID = application_id[0]
+        self.refrenceNumber = refMatches[1]
+        self.dueDate = dateMatches[1]
+        self.examinerName = examiner_name_match[0]
+
+        self.total_refs = refMatches[2:]
 
 
 
@@ -96,13 +97,14 @@ obj = Solution()
 
 text = obj.extract_text_from_pdf()
 
-obj.putSpecificREValuesInDictionary(text)
+obj.defineREGEX(text)
 
-print(str(obj.fieldsToValues))
-
-
-
-
+# print(text)
+print("ID: " + str(obj.applicationID))
+print("Refrence #: " + str(obj.refrenceNumber))
+print("DueDate: " + str(obj.dueDate))
+print("Examiner name: " + str(obj.examinerName))
+print("All refrences: " + str(obj.total_refs))
 
 
 
