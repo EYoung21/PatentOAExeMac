@@ -1,15 +1,5 @@
 
-#/Users/eliyoung/Desktop/Yoni 1 OA Test/1535-674_WB-202010-014-1_Office Action.pdf
 
-
-#WORKS FOR THIS ONE
-#/Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf
-
-#/Users/eliyoung/Desktop/PatentOAs/1535-727_WB-202105-023-1_Final Office Action2.pdf
-
-#/Users/eliyoung/Desktop/PatentOAs/1535-757 WB-202109-017-1 Office Action.pdf
-
-#/Users/eliyoung/Desktop/PatentOAs/1535-806 WB-202202-012-1 Office Action.pdf
 import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
@@ -18,6 +8,8 @@ from pdf2docx import Converter
 import docx
 import os
 from docx import Document
+import re
+from pypdf import PdfReader
 
 
 class Solution():
@@ -30,7 +22,7 @@ class Solution():
         return self.user_input
 
 
-    def getInputAndExtractImageText(self):
+    def getInputAndExtractImageText(self): #returns array with arr[1] == text type, arr[0] = text
         try:
             # Open the PDF file
 
@@ -40,37 +32,38 @@ class Solution():
 
             # Check if the PDF has at least one page
             if self.pdf_document.page_count > 0:
-                # Get the first page
-                page = self.pdf_document[0]
+                reader = PdfReader(user_input)
+                number_of_pages = len(reader.pages)
+                text = ""
+                for page in reader.pages:
+                    text += page.extract_text()
+                # print("textParsed: " + text)
+                
+                if len(text) == 0:
+                    #if no text is parsed, and we get image text, need to then find a way to get the rest of the text in the document
+                    print("No text found. Now searching for images")
+                    page = self.pdf_document[0]
+                    image_list = page.get_images(full=True)
 
-                # Try extracting text
+                    if image_list:
+                        for img_index, img in enumerate(image_list, start=1):
+                            # Extract the image bytes
+                            base_image = self.pdf_document.extract_image(img[0])
+                            image_bytes = base_image["image"]
 
-                # text = page.get_text("text")
-                # if text:
-                #     print("Extracted Text:")
-                #     print(text)
-                # else:
-                    # If no text found, check for images
-                print("No text found. Checking for images...")
-                image_list = page.get_images(full=True)
+                            # Convert to a PIL Image
+                            image = Image.open(io.BytesIO(image_bytes))
 
-                if image_list:
-                    for img_index, img in enumerate(image_list, start=1):
-                        # Extract the image bytes
-                        base_image = self.pdf_document.extract_image(img[0])
-                        image_bytes = base_image["image"]
+                            # Apply OCR to the image
+                            ocr_text = pytesseract.image_to_string(image)
+                            print(f"Text extracted from image {img_index}:")
+                            # print("ocrTextParsed: " + ocr_text)
 
-                        # Convert to a PIL Image
-                        image = Image.open(io.BytesIO(image_bytes))
-
-                        # Apply OCR to the image
-                        ocr_text = pytesseract.image_to_string(image)
-                        print(f"Text extracted from image {img_index}:")
-                        print(ocr_text)
-
-                        return ocr_text
+                            return [ocr_text, "imageText"]
+                    else:
+                        print("no image_list")
                 else:
-                    print("no image_list")
+                    return [text, "fullText"]
             else:
                 print("The PDF has no pages.")
 
@@ -79,36 +72,27 @@ class Solution():
         except Exception as e:
             print(f"An error occurred: {e}")
     
-    def splitReturnArray(self, stringInput):
-        textArr = stringInput.split()
-        print("imagetxt as arr: " + str(textArr))
-        return textArr
+    def putSpecificREValuesInDictionary(self, stringInput):
+        
+        application_id_pattern = r"\d{2}/\d{3},\d{3}"          # Matches the application ID
+        reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"               # Matches the reference number in the format 1535-674
+        due_date_pattern = r"\d{2}/\d{2}/\d{4}"                 # Matches the date
+        examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"      # Matches the examiner name in uppercase letters
 
-    def putSpecificDataValuesInDictionary(self, arrInput):
-        #assuming all array indices will be default
+        application_id = re.search(application_id_pattern, stringInput)
+        reference_number = re.search(reference_number_pattern, stringInput)
 
-        applicationID = arrInput[22] #gets applicationID
+        refMatches = re.findall(reference_number_pattern, stringInput)
+        dateMatches = re.findall(due_date_pattern, stringInput) #finds all dates in file and returns array
 
-        refField = arrInput[27].split("-")
-
-        refNo = refField[1] #gets refNo
-        dueDate = arrInput[47]
-
-        examinerNameArr = [arrInput[42], arrInput[41]]
-
-        examinerNameStr = ""
-        examinerNameStr += arrInput[42]
-        examinerNameStr += " "
-        examinerNameStr += arrInput[41]
-
-        self.examinerName = examinerNameStr
+        # due_date = re.search(due_date_pattern, stringInput)
+        examiner_name = re.search(examiner_name_pattern, stringInput)
 
         self.fieldsToValues = dict()
-        self.fieldsToValues["ID"] = applicationID
-        self.fieldsToValues["refNumber"] = refNo
-        self.fieldsToValues["dueDate"] = dueDate
-        self.fieldsToValues["examinername"] = examinerNameStr
-        #still need examiner phone number
+        self.fieldsToValues["ID"] = application_id
+        self.fieldsToValues["refNumber"] = refMatches
+        self.fieldsToValues["dueDate"] = dateMatches
+        self.fieldsToValues["examinername"] = examiner_name
 
     def convert_pdf_to_docx(self, docName): #issue here
         cv = Converter(self.user_input) #this is the name of pdf from userInput
@@ -141,7 +125,12 @@ class Solution():
 
 
 
-
+#   /Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf
+#   /Users/eliyoung/Desktop/PatentOAs/1535-727_WB-202105-023-1_Final Office Action2.pdf
+#   /Users/eliyoung/Desktop/PatentOAs/1535-740_WB-202107-012-1_Final Office Action2.pdf
+#   /Users/eliyoung/Desktop/PatentOAs/1535-755_WB-202108-020-1_Final Office Action 2.pdf
+#   /Users/eliyoung/Desktop/PatentOAs/1535-757 WB-202109-017-1 Office Action.pdf
+#   /Users/eliyoung/Desktop/PatentOAs/1535-806 WB-202202-012-1 Office Action.pdf
 
 
 
@@ -149,14 +138,24 @@ class Solution():
 
 obj = Solution()
 
-ocr = obj.getInputAndExtractImageText()
+arrText = obj.getInputAndExtractImageText()
 
+if arrText[1] == "imageText":
+    OCRText = arrText[0]
+    print("OCRText: " + "\n" + "\n" + OCRText)
+    obj.putSpecificREValuesInDictionary(OCRText)
+else:
+    regularText = arrText[0]
+    print("ImageText: " + regularText)
+    obj.putSpecificREValuesInDictionary(regularText)
 
-textArr = obj.splitReturnArray(ocr)
+print("resulting dict: " + str(obj.fieldsToValues))
 
-obj.putSpecificDataValuesInDictionary(textArr)
+# textArr = obj.splitReturnArray(ocr)
 
-print(str(obj.fieldsToValues))
+# obj.putSpecificDataValuesInDictionary(textArr)
+
+# print(str(obj.fieldsToValues))
 
 
 # docName = "pdfNowDoc"
@@ -165,7 +164,7 @@ print(str(obj.fieldsToValues))
 
 # obj.extractFromDoc(docName)
 
-#code to parse doc:
+# #code to parse doc:
 
 # from docx import Document
 
@@ -193,3 +192,138 @@ print(str(obj.fieldsToValues))
 #     print(f"The file '{user_input}' was not found.")
 # except Exception as e:
 #     print(f"An error occurred: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+#works for text:
+
+
+
+
+# # #try to use PyMuPDF
+
+# from pypdf import PdfReader
+
+# # import fitz  # PyMuPDF
+# # from PIL import Image
+# # import pytesseract
+# # import io
+# # from pdf2docx import Converter
+# # import docx
+# # import os
+# # from docx import Document
+# # import re
+
+
+# class Solution():
+
+#     def __init__(self):
+#         pass
+
+#     def returnUserInput(self):
+#         self.user_input = input("Which file would you like to examine? ")
+#         return self.user_input
+
+
+#     def extractImageTxt(self, PDFPath):
+#         reader = PdfReader(PDFPath)
+#         number_of_pages = len(reader.pages)
+#         text = ""
+#         for page in reader.pages:
+#             text += page.extract_text()
+
+#         print(text)
+#         return text
+
+    
+#     def putSpecificREValuesInDictionary(self, stringInput):
+        
+#         application_id_pattern = r"\d{2}/\d{3},\d{3}"          # Matches the application ID
+#         reference_number_pattern = r"\d{4}-\d{3}"               # Matches the reference number in the format 1535-674
+#         due_date_pattern = r"\d{2}/\d{2}/\d{4}"                 # Matches the date
+#         examiner_name_pattern = r"[A-Z]+\s+[A-Z]+\s+[A-Z]+"      # Matches the examiner name in uppercase letters
+
+#         application_id = re.search(application_id_pattern, stringInput)
+#         reference_number = re.search(reference_number_pattern, stringInput)
+#         due_date = re.search(due_date_pattern, stringInput)
+#         examiner_name = re.search(examiner_name_pattern, stringInput)
+
+#         self.fieldsToValues = dict()
+#         self.fieldsToValues["ID"] = application_id
+#         self.fieldsToValues["refNumber"] = reference_number
+#         self.fieldsToValues["dueDate"] = due_date
+#         self.fieldsToValues["examinername"] = examiner_name
+
+
+
+
+# obj = Solution()
+
+# input1 = obj.returnUserInput()
+
+# obj.extractImageTxt(input1)
+
+# # textArr = obj.splitReturnArray(ocr)
+
+# # obj.putSpecificDataValuesInDictionary(textArr)
+
+# # print(str(obj.fieldsToValues))
+
+
+# # docName = "pdfNowDoc"
+
+# # obj.convert_pdf_to_docx(docName)
+
+# # obj.extractFromDoc(docName)
+
+# # #code to parse doc:
+
+# # from docx import Document
+
+# # # Get the user input for the Word document file path
+# # user_input = input("Which Word file would you like to examine? ")
+
+# # try:
+# #     # Open the Word document
+# #     doc = Document(user_input)
+
+# #     # Initialize a variable to hold the extracted text
+# #     text = ""
+
+# #     # Iterate through the paragraphs in the document
+# #     for para in doc.paragraphs:
+# #         text += para.text + "\n"  # Add each paragraph's text and a newline for separation
+
+# #     # Check if any text was extracted
+# #     if text.strip():  # Only print if there's text
+# #         print(text)
+# #     else:
+# #         print("No text found in the document.")
+
+# # except FileNotFoundError:
+# #     print(f"The file '{user_input}' was not found.")
+# # except Exception as e:
+# #     print(f"An error occurred: {e}")
+
+
+
+
+
+# # userInput = input("do it: ")
+
+# # reader = PdfReader("/Users/eliyoung/Desktop/PatentOAs/1535-806 WB-202202-012-1 Office Action.pdf")
+# # number_of_pages = len(reader.pages)
+# # text = ""
+# # for page in reader.pages:
+# #     text += page.extract_text()
+
+# # print(text)

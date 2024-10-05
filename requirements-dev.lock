@@ -101,6 +101,8 @@ pyparsing==3.1.4
     # via httplib2
     # via pydot
     # via rdflib
+pypdf==5.0.1
+    # via yoni-patent-project
 pypdf2==3.0.1
     # via yoni-patent-project
 pypdfium2==4.30.0
