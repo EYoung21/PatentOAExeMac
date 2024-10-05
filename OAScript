@@ -61,7 +61,10 @@ class Solution():
         reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"               # Matches the reference number in the format 1535-674
         due_date_pattern = r"\d{2}/\d{2}/\d{4}"                 # Matches the date
         examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"      # Matches the examiner name in uppercase letters
-        telephone_pattern = r"whose telephone number is\s+(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})"
+        # telephone_pattern = r"whose telephone number is\s+(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})"   #works for all but first
+
+        telephone_pattern = r"whose\s+telephone\s+number\s+is\s*[\s\n\r]*\(?\d{3}\)?[-.\s]?(\d{3})[-.\s]?(\d{4})"
+
 
         application_id = re.findall(application_id_pattern, stringInput)
         phones = re.findall(telephone_pattern, stringInput)
@@ -84,7 +87,7 @@ class Solution():
 
 
 
-#   /Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf
+#   /Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf   #didnt pickup phone #
 #   /Users/eliyoung/Desktop/PatentOAs/1535-727_WB-202105-023-1_Final Office Action2.pdf
 #   /Users/eliyoung/Desktop/PatentOAs/1535-740_WB-202107-012-1_Final Office Action2.pdf
 #   /Users/eliyoung/Desktop/PatentOAs/1535-755_WB-202108-020-1_Final Office Action 2.pdf
