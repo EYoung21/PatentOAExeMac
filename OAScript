@@ -174,6 +174,8 @@ for filename in os.listdir(directory):
 
         text = obj.extract_text_from_pdf(f)
 
+        #here generate summary and put in subfolder_path
+
         obj.defineREGEX(text)
 
         print("ID: " + str(obj.applicationID))
