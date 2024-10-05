@@ -20,6 +20,8 @@ dependencies = [
     "easyocr>=1.7.2",
     "pypandoc>=1.13",
     "pandoc>=2.4",
+    "openai>=1.51.0",
+    "python-dotenv>=1.0.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
