@@ -56,32 +56,41 @@ class Solution():
         return extracted_text
     
     def defineREGEX(self, stringInput):
-        
-        application_id_pattern = r"\d{2}/\d{3},\d{3}"          # Matches the application ID
-        reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"               # Matches the reference number in the format 1535-674
-        due_date_pattern = r"\d{2}/\d{2}/\d{4}"                 # Matches the date
-        examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"      # Matches the examiner name in uppercase letters
-        # telephone_pattern = r"whose telephone number is\s+(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})"   #works for all but first
+        # Normalize the text, preserving newlines
+        normalized_text = re.sub(r'[^\S\n]+', ' ', stringInput)
 
-        telephone_pattern = r"whose\s+telephone\s+number\s+is\s*[\s\n\r]*\(?\d{3}\)?[-.\s]?(\d{3})[-.\s]?(\d{4})"
+        # Define patterns
+        application_id_pattern = r"\d{2}/\d{3},\d{3}"
+        reference_number_pattern = r"\d{4}-[A-Za-z0-9]+"
+        due_date_pattern = r"\d{2}/\d{2}/\d{4}"
+        examiner_name_pattern = r"[A-Z]+,\s*[A-Z]+(?:\s[A-Z]\.?)?"
+        telephone_pattern = r"whose\s+telephone\s+number\s+is\s*(?:\(?\d{3}\)?[-.\s]?){2}\d{4}"
 
+        # Updated telephone pattern to handle line breaks
+        updated_telephone_pattern = r"whose\s+telephone\s+number\s+is\s*(?:\(?\d{3}\)?[-.\s]?\n?){2}\d{4}"
 
-        application_id = re.findall(application_id_pattern, stringInput)
-        phones = re.findall(telephone_pattern, stringInput)
-        refMatches = re.findall(reference_number_pattern, stringInput)
-        dateMatches = re.findall(due_date_pattern, stringInput) #finds all dates in file and returns array
+        # Find patterns
+        application_id = re.findall(application_id_pattern, normalized_text)
+        phones = re.findall(updated_telephone_pattern, normalized_text, re.DOTALL)
+        refMatches = re.findall(reference_number_pattern, normalized_text)
+        dateMatches = re.findall(due_date_pattern, normalized_text)
+        examiner_name_match = re.findall(examiner_name_pattern, normalized_text)
 
-        # due_date = re.search(due_date_pattern, stringInput)
-        examiner_name_match = re.findall(examiner_name_pattern, stringInput)
-
-        # self.fieldsToValues = dict()
-        self.applicationID = application_id[0]
-        self.refrenceNumber = refMatches[1]
-        self.dueDate = dateMatches[1]
-        self.examinerName = examiner_name_match[0]
-        self.phone_numbers = phones
-
+        # Assign values
+        self.applicationID = application_id[0] if application_id else None
+        self.refrenceNumber = refMatches[1] if len(refMatches) > 1 else None
+        self.dueDate = dateMatches[1] if len(dateMatches) > 1 else None
+        self.examinerName = examiner_name_match[0] if examiner_name_match else None
+        self.phone_numbers = [re.sub(r'\s+', '', phone) for phone in phones]  # Clean up extracted phone numbers
         self.total_refs = refMatches
+
+        # # Debug prints
+        # print(f"\nApplication ID: {self.applicationID}")
+        # print(f"Reference Number: {self.refrenceNumber}")
+        # print(f"Due Date: {self.dueDate}")
+        # print(f"Examiner Name: {self.examinerName}")
+        # print(f"Phone numbers found: {self.phone_numbers}")
+        # print(f"Total references: {self.total_refs}")
 
 
 
@@ -102,9 +111,11 @@ obj = Solution()
 
 text = obj.extract_text_from_pdf()
 
+# normalized_text = re.sub(r'\s+', ' ', text)
+
 obj.defineREGEX(text)
 
-print(text)
+# print(text)
 print("ID: " + str(obj.applicationID))
 print("Refrence #: " + str(obj.refrenceNumber))
 print("DueDate: " + str(obj.dueDate))
