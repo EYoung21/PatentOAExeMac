@@ -27,76 +27,146 @@ configparser==7.1.0
     # via fitz
 cryptography==43.0.1
     # via pdfminer-six
+deprecated==1.2.14
+    # via pikepdf
+deprecation==2.1.0
+    # via ocrmypdf
+easyocr==1.7.2
+    # via yoni-patent-project
 etelemetry==0.3.1
     # via nipype
 filelock==3.16.1
     # via nipype
+    # via torch
 fire==0.7.0
     # via pdf2docx
 fitz==0.0.1.dev2
     # via yoni-patent-project
 fonttools==4.54.1
     # via pdf2docx
+fsspec==2024.9.0
+    # via torch
 httplib2==0.22.0
     # via fitz
 idna==3.10
     # via requests
+imageio==2.35.1
+    # via scikit-image
+img2pdf==0.5.1
+    # via ocrmypdf
 isodate==0.6.1
     # via rdflib
+jinja2==3.1.4
+    # via torch
+lazy-loader==0.4
+    # via scikit-image
 looseversion==1.3.0
     # via nipype
 lxml==5.3.0
+    # via pikepdf
     # via prov
     # via python-docx
     # via pyxnat
+markdown-it-py==3.0.0
+    # via rich
+markupsafe==2.1.5
+    # via jinja2
+mdurl==0.1.2
+    # via markdown-it-py
+mpmath==1.3.0
+    # via sympy
 networkx==3.3
     # via nipype
     # via prov
+    # via scikit-image
+    # via torch
 nibabel==5.2.1
     # via fitz
     # via nipype
+ninja==1.11.1.1
+    # via easyocr
 nipype==1.8.6
     # via fitz
 numpy==2.1.1
+    # via easyocr
     # via fitz
+    # via imageio
     # via nibabel
     # via nipype
     # via opencv-python-headless
     # via pandas
     # via pdf2docx
+    # via scikit-image
     # via scipy
+    # via shapely
+    # via tifffile
+    # via torchvision
+ocrmypdf==16.5.0
+    # via yoni-patent-project
 opencv-python-headless==4.10.0.84
+    # via easyocr
     # via pdf2docx
 packaging==24.1
+    # via deprecation
     # via etelemetry
+    # via lazy-loader
     # via nibabel
     # via nipype
+    # via ocrmypdf
+    # via pikepdf
     # via pytesseract
+    # via scikit-image
 pandas==2.2.3
     # via fitz
+pandoc==2.4
+    # via yoni-patent-project
 pathlib==1.0.1
     # via pyxnat
 pdf2docx==0.5.8
     # via yoni-patent-project
 pdfminer-six==20231228
+    # via ocrmypdf
     # via pdfplumber
 pdfplumber==0.11.4
     # via yoni-patent-project
+pi-heif==0.18.0
+    # via ocrmypdf
+pikepdf==9.3.0
+    # via img2pdf
+    # via ocrmypdf
 pillow==10.4.0
+    # via easyocr
+    # via imageio
+    # via img2pdf
+    # via ocrmypdf
     # via pdfplumber
+    # via pi-heif
+    # via pikepdf
     # via pytesseract
+    # via scikit-image
+    # via torchvision
     # via yoni-patent-project
+pluggy==1.5.0
+    # via ocrmypdf
+plumbum==1.9.0
+    # via pandoc
+ply==3.11
+    # via pandoc
 prov==2.0.1
     # via nipype
+pyclipper==1.3.0.post5
+    # via easyocr
 pycparser==2.22
     # via cffi
 pydot==3.0.2
     # via nipype
-pymupdf==1.24.10
+pygments==2.18.0
+    # via rich
+pymupdf==1.24.11
     # via pdf2docx
     # via yoni-patent-project
-pymupdfb==1.24.10
-    # via pymupdf
+pypandoc==1.13
+    # via yoni-patent-project
 pyparsing==3.1.4
     # via httplib2
     # via pydot
@@ -109,6 +179,8 @@ pypdfium2==4.30.0
     # via pdfplumber
 pytesseract==0.3.13
     # via yoni-patent-project
+python-bidi==0.6.0
+    # via easyocr
 python-dateutil==2.9.0.post0
     # via nipype
     # via pandas
@@ -120,27 +192,53 @@ pytz==2024.2
     # via pandas
 pyxnat==1.6.2
     # via fitz
+pyyaml==6.0.2
+    # via easyocr
 rdflib==6.3.2
     # via nipype
     # via prov
 requests==2.32.3
     # via etelemetry
     # via pyxnat
+rich==13.9.2
+    # via ocrmypdf
+scikit-image==0.24.0
+    # via easyocr
 scipy==1.14.1
+    # via easyocr
     # via fitz
     # via nipype
+    # via scikit-image
+setuptools==75.1.0
+    # via torch
+shapely==2.0.6
+    # via easyocr
 simplejson==3.19.3
     # via nipype
 six==1.16.0
     # via isodate
     # via python-dateutil
+sympy==1.13.3
+    # via torch
 termcolor==2.4.0
     # via fire
+tesseract==0.1.3
+    # via yoni-patent-project
+tifffile==2024.9.20
+    # via scikit-image
+torch==2.4.1
+    # via easyocr
+    # via torchvision
+torchvision==0.19.1
+    # via easyocr
 traits==6.3.2
     # via nipype
 typing-extensions==4.12.2
     # via python-docx
+    # via torch
 tzdata==2024.2
     # via pandas
 urllib3==2.2.3
     # via requests
+wrapt==1.16.0
+    # via deprecated
