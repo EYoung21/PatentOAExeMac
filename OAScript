@@ -17,6 +17,7 @@ import pypandoc
 import csv
 import openai
 from dotenv import load_dotenv
+from openai import OpenAI
 
 class Solution():
 
@@ -180,19 +181,58 @@ for filename in os.listdir(directory):
 
         prompt = f"Summarize this patent office action in a short paragraph:\n\n{text}"
 
-        api_key = os.getenv('API_KEY')
+        # api_key = os.getenv('API_KEY')
 
-        response = openai.ChatCompletion.create(
-            model='gpt-4',  # or whichever model you're using
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+        # response = openai.ChatCompletion.create(
+        #     model='gpt-4',  # or whichever model you're using
+        #     messages=[
+        #         {"role": "user", "content": prompt}
+        #     ]
+        # )
+
+        # summary = response['choices'][0]['message']['content']
+
+        # with open(subfolder_path + '/summary.txt', 'w') as summary_file:
+        #     summary_file.write(summary)
+
+        load_dotenv()
+
+        client = OpenAI(
+            # This is the default and can be omitted
+            # api_key=os.environ.get("OPENAI_API_KEY"),
+            api_key = os.getenv("OPENAI_API_KEY")
         )
 
-        summary = response['choices'][0]['message']['content']
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Say this is a test",
+                }
+            ],
+            model="gpt-3.5-turbo",
+        )
 
-        with open(subfolder_path + '/summary.txt', 'w') as summary_file:
-            summary_file.write(summary)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        # {
+                        #     "type": "image_url",
+                        #     "image_url": {"url": f"{img_url}"},
+                        # },
+                    ],
+                }
+            ],
+        )
+
+        
+        print(response)
+
+
 
         obj.defineREGEX(text)
 
