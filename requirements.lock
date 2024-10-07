@@ -37,12 +37,18 @@ configparser==7.1.0
     # via fitz
 cryptography==43.0.1
     # via pdfminer-six
+cx-freeze==7.2.3
+    # via yoni-patent-project
 deprecated==1.2.14
     # via pikepdf
 deprecation==2.1.0
     # via ocrmypdf
 distro==1.9.0
     # via openai
+dmgbuild==1.6.2
+    # via cx-freeze
+ds-store==1.3.1
+    # via dmgbuild
 easyocr==1.7.2
     # via yoni-patent-project
 etelemetry==0.3.1
@@ -89,6 +95,9 @@ lxml==5.3.0
     # via prov
     # via python-docx
     # via pyxnat
+mac-alias==2.2.2
+    # via dmgbuild
+    # via ds-store
 macholib==1.16.3
     # via pyinstaller
 markdown-it-py==3.0.0
@@ -133,6 +142,7 @@ opencv-python-headless==4.10.0.84
     # via easyocr
     # via pdf2docx
 packaging==24.1
+    # via cx-freeze
     # via deprecation
     # via etelemetry
     # via lazy-loader
@@ -148,7 +158,7 @@ pandas==2.2.3
     # via fitz
 pandoc==2.4
     # via yoni-patent-project
-pathlib==1.0.1
+# pathlib==1.0.1 (excluded)
     # via pyxnat
 pdf2docx==0.5.8
     # via yoni-patent-project
@@ -248,6 +258,7 @@ scipy==1.14.1
     # via nipype
     # via scikit-image
 setuptools==75.1.0
+    # via cx-freeze
     # via pyinstaller
     # via pyinstaller-hooks-contrib
     # via torch
