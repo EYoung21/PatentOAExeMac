@@ -10,6 +10,9 @@
 #   universal: false
 
 -e file:.
+altgraph==0.17.4
+    # via macholib
+    # via pyinstaller
 annotated-types==0.7.0
     # via pydantic
 anyio==4.6.0
@@ -86,6 +89,8 @@ lxml==5.3.0
     # via prov
     # via python-docx
     # via pyxnat
+macholib==1.16.3
+    # via pyinstaller
 markdown-it-py==3.0.0
     # via rich
 markupsafe==2.1.5
@@ -135,6 +140,8 @@ packaging==24.1
     # via nipype
     # via ocrmypdf
     # via pikepdf
+    # via pyinstaller
+    # via pyinstaller-hooks-contrib
     # via pytesseract
     # via scikit-image
 pandas==2.2.3
@@ -187,6 +194,10 @@ pydot==3.0.2
     # via nipype
 pygments==2.18.0
     # via rich
+pyinstaller==6.10.0
+    # via yoni-patent-project
+pyinstaller-hooks-contrib==2024.8
+    # via pyinstaller
 pymupdf==1.24.11
     # via pdf2docx
     # via yoni-patent-project
@@ -237,6 +248,8 @@ scipy==1.14.1
     # via nipype
     # via scikit-image
 setuptools==75.1.0
+    # via pyinstaller
+    # via pyinstaller-hooks-contrib
     # via torch
 shapely==2.0.6
     # via easyocr

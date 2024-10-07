@@ -18,6 +18,8 @@ import csv
 import openai
 from dotenv import load_dotenv
 from openai import OpenAI
+from tkinter import Tk
+from tkinter.filedialog import askdirectory  # for folder selection
 
 class Solution():
 
@@ -103,7 +105,24 @@ class Solution():
 # Specify the directory name with a full or relative path
 # import os
 
-# Get the user's home directory
+
+
+#run rye run pyinstaller --onefile --windowed OAScript
+# or pyinstaller --onefile --windowed OAScript
+#to create exe
+# if __name__ == "__main__":
+#     # Create Tkinter root window (but don't show it)
+#     root = Tk()
+#     root.withdraw()  # Hide the root window
+
+#     # Let the user select a folder
+#     directory = askdirectory(title="Select Folder Containing OA PDFs")
+
+#     if not directory:
+#         print("No folder selected.")
+#         exit()
+
+    # Get the user's home directory
 home_directory = os.path.expanduser("~")
 
 # Construct the Desktop path
@@ -134,6 +153,8 @@ rows = [
 
 directory = input("Paste the path to the folder of OA PDFs you're looking at: ")
 #gets input
+
+#loops through input directory
 for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
     # checking if it is a file
@@ -181,19 +202,6 @@ for filename in os.listdir(directory):
 
         prompt = f"Summarize this patent office action in a short paragraph:\n\n{text}"
 
-        # api_key = os.getenv('API_KEY')
-
-        # response = openai.ChatCompletion.create(
-        #     model='gpt-4',  # or whichever model you're using
-        #     messages=[
-        #         {"role": "user", "content": prompt}
-        #     ]
-        # )
-
-        # summary = response['choices'][0]['message']['content']
-
-        # with open(subfolder_path + '/summary.txt', 'w') as summary_file:
-        #     summary_file.write(summary)
 
         load_dotenv()
 
