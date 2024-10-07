@@ -230,8 +230,10 @@ for filename in os.listdir(directory):
         )
 
         
-        print(response)
+        # print(response)
 
+        with open(subfolder_path + '/summary.txt', 'w') as summary_file:
+            summary_file.write(response)
 
 
         obj.defineREGEX(text)
