@@ -6,7 +6,7 @@ import subprocess
 def process_dropped_folder(folder_path):
     # Call the main script with the folder path as an argument
     script_path = os.path.join(os.path.dirname(sys.executable), 'oa_processor.py')
-    subprocess.run([sys.executable, script_path, folder_path[:-1]])  # No quotes needed here
+    subprocess.run([sys.executable, script_path, folder_path])  # No quotes needed here
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
