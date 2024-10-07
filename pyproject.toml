@@ -24,6 +24,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "pyinstaller>=6.10.0",
     "cx-freeze>=7.2.3",
+    "tkinterdnd2>=0.4.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

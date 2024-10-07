@@ -114,6 +114,8 @@ class Solution():
 # or pyinstaller --onefile --windowed --hidden-import=scipy.special._cdflib OAScript
 #to create exe
 
+#NEW RUN FILE
+#rye run pyinstaller oa_processor.spec  
 
 def main(directory):
 

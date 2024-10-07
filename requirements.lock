@@ -281,6 +281,8 @@ tesseract==0.1.3
     # via yoni-patent-project
 tifffile==2024.9.20
     # via scikit-image
+tkinterdnd2==0.4.2
+    # via yoni-patent-project
 torch==2.4.1
     # via easyocr
     # via torchvision
