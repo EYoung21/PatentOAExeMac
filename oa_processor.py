@@ -3,6 +3,17 @@
 #ask how I could figure out the type of an OA
 
 
+
+
+#have ai make open ai summary of google patent text of:
+#1. application id
+#2. each refrence
+#3. all summaries in one summary.txt
+
+
+#if have leftover time jump on zoom call
+# for 
+
 import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
@@ -79,6 +90,9 @@ class Solution():
 
         # Updated telephone pattern to handle line breaks
         updated_telephone_pattern = r"whose\s+telephone\s+number\s+is\s*(?:\(?\d{3}\)?[-.\s]?\n?){2}\d{4}"
+#11,995,475
+        ref_pulled_pattern = r"\d{4}/\d{7}|\d{2},\d{3},\d{3}|\d{1},\d{3},\d{3}"
+        # ref_pulled_pattern2 = 
 
         # Find patterns
         application_id = re.findall(application_id_pattern, normalized_text)
@@ -87,6 +101,8 @@ class Solution():
         dateMatches = re.findall(due_date_pattern, normalized_text)
         examiner_name_match = re.findall(examiner_name_pattern, stringInput)
 
+        pulledRefMatches = re.findall(ref_pulled_pattern, normalized_text)
+
         # Assign values
         self.applicationID = application_id[0] if application_id else None
         self.refrenceNumber = refMatches[1] if len(refMatches) > 1 else None
@@ -94,6 +110,8 @@ class Solution():
         self.examinerName = examiner_name_match[0] if examiner_name_match else None
         self.phone_numbers = [re.sub(r'\s+', '', phone) for phone in phones]  # Clean up extracted phone numbers
         self.total_refs = refMatches
+
+        self.total_pulled_refs = pulledRefMatches
 
 
 #   /Users/eliyoung/Desktop/PatentOAs/1535-111CIP2_WB-201703-008-1-US1_Final Office Action 4.pdf   #didnt pickup phone #
@@ -198,7 +216,6 @@ def main(directory):
 
             prompt = f"Summarize this patent office action in a short paragraph:\n\n{text}"
 
-
             load_dotenv()
 
             client = OpenAI(
@@ -206,19 +223,9 @@ def main(directory):
                 # api_key=os.environ.get("OPENAI_API_KEY"),
                 api_key = os.getenv("OPENAI_API_KEY")
             )
-
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": "Say this is a test",
-                    }
-                ],
-                model="gpt-3.5-turbo",
-            )
-
+            print(os.getenv("OPENAI_API_KEY"))
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",
                 messages=[
                     {
                         "role": "user",
@@ -237,7 +244,7 @@ def main(directory):
             # print(response)
 
             with open(subfolder_path + '/summary.txt', 'w') as summary_file:
-                summary_file.write(response)
+                summary_file.write(str(response))
 
 
             obj.defineREGEX(text)
@@ -262,6 +269,10 @@ def main(directory):
                 print("Examiner #: " + examinerNumber)
 
             rows.append([obj.applicationID, obj.refrenceNumber, "", obj.dueDate, "", "", examinerRealName, examinerNumber])
+
+            # print("All refrence #s: " + str(obj.total_refs))
+
+            print("Pulled refs:" + str(obj.total_pulled_refs))
 
     # Create the CSV file and write the header and rows
     try:
