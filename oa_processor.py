@@ -34,6 +34,14 @@ from tkinter.filedialog import askdirectory  # for folder selection
 import tkinter
 from cx_Freeze import setup, Executable
 import sys
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+from selenium.common.exceptions import TimeoutException
+
 
 class Solution():
 
@@ -43,7 +51,41 @@ class Solution():
     # def defineUserInput(self):
     #     self.user_input = input("Which file would you like to examine? ")
     #     return self.user_input
+    
+    def inputRefReturnText(self, ref):
+        driver = webdriver.Chrome()  # Use the appropriate driver for your browser
+        driver.get('https://patents.google.com/')
 
+        # Increase the timeout duration
+        wait = WebDriverWait(driver, 30)
+
+        # Wait until the search bar is visible
+        try:
+            search_bar = wait.until(EC.presence_of_element_located((By.NAME, "q")))  # Wait for the search bar
+            initial_url = driver.current_url
+            search_bar.send_keys(ref)  # Replace with your search term
+            search_bar.send_keys(Keys.RETURN)  # Simulate pressing Enter
+
+            # Wait for search results
+            wait.until(lambda driver: driver.current_url != initial_url)
+            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#wrapper > div:nth-child(3)'))) 
+        except TimeoutException:
+            print("Timed out waiting for search results to load.")
+            driver.quit()  # Close the browser
+            return None
+
+        # Grab the HTML of the resulting page
+        html = driver.page_source
+
+        # Parse the page with BeautifulSoup
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # Extract only the visible text from the page
+        page_text = soup.get_text(separator='\n', strip=True)
+
+        driver.quit()  # Close the browser when done
+        # print("google patent text:" + page_text)
+        return page_text[:-len(page_text)//2] #cuts second half off
 
     def extract_text_from_pdf(self, PDFPath):
         
@@ -122,6 +164,9 @@ class Solution():
 #   /Users/eliyoung/Desktop/PatentOAs/1535-806 WB-202202-012-1 Office Action.pdf
 
 
+#/Users/eliyoung/Desktop/more
+
+
 
 # Specify the directory name with a full or relative path
 # import os
@@ -194,7 +239,7 @@ def main(directory):
             else:
                 subfolder_name = ""
 
-
+            OAName = str(subfolder_name)
             subfolder_name = str("MATERIALS FOR " + str(subfolder_name))
             subfolder_path = os.path.join(directory_name, subfolder_name)
             try:
@@ -211,41 +256,6 @@ def main(directory):
             obj = Solution()
 
             text = obj.extract_text_from_pdf(f)
-
-            #here generate summary and put in subfolder_path
-
-            prompt = f"Summarize this patent office action in a short paragraph:\n\n{text}"
-
-            load_dotenv()
-
-            client = OpenAI(
-                # This is the default and can be omitted
-                # api_key=os.environ.get("OPENAI_API_KEY"),
-                api_key = os.getenv("OPENAI_API_KEY")
-            )
-            print(os.getenv("OPENAI_API_KEY"))
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            # {
-                            #     "type": "image_url",
-                            #     "image_url": {"url": f"{img_url}"},
-                            # },
-                        ],
-                    }
-                ],
-            )
-
-            
-            # print(response)
-
-            with open(subfolder_path + '/summary.txt', 'w') as summary_file:
-                summary_file.write(str(response))
-
 
             obj.defineREGEX(text)
 
@@ -273,6 +283,99 @@ def main(directory):
             # print("All refrence #s: " + str(obj.total_refs))
 
             print("Pulled refs:" + str(obj.total_pulled_refs))
+
+            # exit()
+
+            #here generate summary and put in subfolder_path
+
+            total_pdf_summary = ""
+
+            prompt = f"Summarize this document:\n\n{text}"
+
+            load_dotenv()
+
+            client = OpenAI(
+                # This is the default and can be omitted
+                # api_key=os.environ.get("OPENAI_API_KEY"),
+                api_key = os.getenv("OPENAI_API_KEY")
+            )
+            #stuff to summarize OAPDF
+            # # print(os.getenv("OPENAI_API_KEY"))
+            # response = client.chat.completions.create(
+            #     model="gpt-4o",
+            #     messages=[
+            #         {
+            #             "role": "user",
+            #             "content": [
+            #                 {"type": "text", "text": prompt}, #can individualize prompts later
+            #                 # {
+            #                 #     "type": "image_url",
+            #                 #     "image_url": {"url": f"{img_url}"},
+            #                 # },
+            #             ],
+            #         }
+            #     ],
+            # )
+
+            # content = response.choices[0].message.content
+
+            # total_pdf_summary += "Summary of original office action({OAName}):"
+            # total_pdf_summary += "\n"
+            # total_pdf_summary += content
+            # total_pdf_summary += "\n"
+            # total_pdf_summary += "\n"
+            
+            applicationIDPatenttext = obj.inputRefReturnText(obj.applicationID)
+
+            prompt2 = f"Summarize this document:\n\n{applicationIDPatenttext}"
+            response2 = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt2}, #can individualize prompts later
+                            # {
+                            #     "type": "image_url",
+                            #     "image_url": {"url": f"{img_url}"},
+                            # },
+                        ],
+                    }
+                ],
+            )
+            content2 = response2.choices[0].message.content
+            total_pdf_summary += f"Summary of application ID({obj.applicationID})'s google patent text"
+            total_pdf_summary += "\n"
+            total_pdf_summary += content2
+            total_pdf_summary += "\n"
+            total_pdf_summary += "\n"
+
+            for i in range(len(obj.total_pulled_refs)):
+                refPatentText = obj.inputRefReturnText(obj.applicationID)
+                prompt = f"Summarize this document:\n\n{refPatentText}"
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt}, #can individualize prompts later
+                            ],
+                        }
+                    ],
+                )
+                content = response.choices[0].message.content
+                total_pdf_summary += f"Summary of current refrence({obj.total_pulled_refs[i]})'s google patent text"
+                total_pdf_summary += "\n"
+                total_pdf_summary += content
+                total_pdf_summary += "\n"
+                total_pdf_summary += "\n"
+
+
+            with open(subfolder_path + '/summary.txt', 'w') as summary_file:
+                summary_file.write(str(total_pdf_summary))
+
+            # exit()
 
     # Create the CSV file and write the header and rows
     try:

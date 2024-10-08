@@ -25,6 +25,8 @@ dependencies = [
     "pyinstaller>=6.10.0",
     "cx-freeze>=7.2.3",
     "tkinterdnd2>=0.4.2",
+    "bs4>=0.0.2",
+    "selenium>=4.25.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
