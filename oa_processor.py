@@ -5,6 +5,15 @@
 
 
 
+#might not need all 5 refrences (some might be more important than others) (context dependant) - ~5-10 hours
+#exe (have exe in folder and script in there) - ~1 hrs
+#office action type - if final -> FOA Response 2mo if not -> OA Response  (search for "THIS ACTION IS MADE FINAL") - 20 mins - 1 hr
+#word templete - ~5-15 hrs context dependant
+#extract pdf from google patent - ~5 hrs?
+#improve AI and formatting of summary output into docx (with formatting) - ~5hrs
+
+
+
 #have ai make open ai summary of google patent text of:
 #1. application id
 #2. each refrence
