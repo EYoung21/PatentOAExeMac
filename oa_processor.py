@@ -12,7 +12,8 @@
 
 
 #if have leftover time jump on zoom call
-# for 
+#populate word templete
+#make exe
 
 import fitz  # PyMuPDF
 from PIL import Image
@@ -68,7 +69,7 @@ class Solution():
 
             # Wait for search results
             wait.until(lambda driver: driver.current_url != initial_url)
-            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#wrapper > div:nth-child(3)'))) 
+            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#wrapper > div:nth-child(3)'))) #ex selector
         except TimeoutException:
             print("Timed out waiting for search results to load.")
             driver.quit()  # Close the browser
@@ -290,7 +291,9 @@ def main(directory):
 
             total_pdf_summary = ""
 
-            prompt = f"Summarize this document:\n\n{text}"
+            # prompt = f"Summarize this document:\n\n{text}"
+
+            prompt = f"Can you summarize this technology including telling me what is the problem it's trying to solve, a detailed summary of the technology and keywords and their definitions used?\n\n{text}"
 
             load_dotenv()
 
@@ -327,9 +330,9 @@ def main(directory):
             
             applicationIDPatenttext = obj.inputRefReturnText(obj.applicationID)
 
-            prompt2 = f"Summarize this document:\n\n{applicationIDPatenttext}"
+            prompt2 = f"Can you summarize this technology including telling me what is the problem it's trying to solve, a detailed summary of the technology and keywords and their definitions used?\n\n{applicationIDPatenttext}"
             response2 = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 messages=[
                     {
                         "role": "user",
@@ -352,9 +355,9 @@ def main(directory):
 
             for i in range(len(obj.total_pulled_refs)):
                 refPatentText = obj.inputRefReturnText(obj.applicationID)
-                prompt = f"Summarize this document:\n\n{refPatentText}"
+                prompt = f"Can you summarize this technology including telling me what is the problem it's trying to solve, a detailed summary of the technology and keywords and their definitions used?:\n\n{refPatentText}"
                 response = client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-4o-mini",
                     messages=[
                         {
                             "role": "user",
