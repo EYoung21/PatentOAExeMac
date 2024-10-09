@@ -220,7 +220,7 @@ def main():
 
     home_directory = os.path.expanduser("~")
     desktop_path = os.path.join(home_directory, "Desktop")
-    directory_name = os.path.join(desktop_path, "DataCSV1 & Refrence Summaries")
+    directory_name = os.path.join(desktop_path, "DataCSV & Refrence Summaries")
 
     # Create the directory
     try:
