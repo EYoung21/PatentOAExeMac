@@ -28,21 +28,14 @@ import fitz  # PyMuPDF
 from PIL import Image
 import pytesseract
 import io
-from pdf2docx import Converter
-import docx
 import os
 from docx import Document
 import re
-from pypdf import PdfReader
-import pypandoc
 import csv
-import openai
 from dotenv import load_dotenv
 from openai import OpenAI
 from tkinter import Tk
 from tkinter.filedialog import askdirectory  # for folder selection
-import tkinter
-from cx_Freeze import setup, Executable
 import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -51,6 +44,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from selenium.common.exceptions import TimeoutException
+
+import docx
+from pdf2docx import Converter
+from pypdf import PdfReader
+import pypandoc
+import openai
+import tkinter
+from cx_Freeze import setup, Executable
 
 def get_env_path():
     if getattr(sys, 'frozen', False):
@@ -106,7 +107,7 @@ class Solution():
 
         driver.quit()  # Close the browser when done
         # print("google patent text:" + page_text)
-        return page_text[:-len(page_text)//2] #cuts second half off
+        return page_text[:-len(page_text)//5] #cuts last fifth off
 
     def extract_text_from_pdf(self, PDFPath):
         
@@ -155,6 +156,8 @@ class Solution():
         updated_telephone_pattern = r"whose\s+telephone\s+number\s+is\s*(?:\(?\d{3}\)?[-.\s]?\n?){2}\d{4}"
 #11,995,475
         ref_pulled_pattern = r"\d{4}/\d{7}|\d{2},\d{3},\d{3}|\d{1},\d{3},\d{3}"
+
+        typePattern = r"THIS ACTION IS MADE FINAL"
         # ref_pulled_pattern2 = 
 
         # Find patterns
@@ -166,6 +169,8 @@ class Solution():
 
         pulledRefMatches = re.findall(ref_pulled_pattern, normalized_text)
 
+        typeMatches = re.findall(typePattern, normalized_text)
+
         # Assign values
         self.applicationID = application_id[0] if application_id else None
         self.refrenceNumber = refMatches[1] if len(refMatches) > 1 else None
@@ -173,6 +178,7 @@ class Solution():
         self.examinerName = examiner_name_match[0] if examiner_name_match else None
         self.phone_numbers = [re.sub(r'\s+', '', phone) for phone in phones]  # Clean up extracted phone numbers
         self.total_refs = refMatches
+        self.totalFinalTypes = typeMatches
 
         self.total_pulled_refs = pulledRefMatches
 
@@ -214,7 +220,7 @@ def main():
 
     home_directory = os.path.expanduser("~")
     desktop_path = os.path.join(home_directory, "Desktop")
-    directory_name = os.path.join(desktop_path, "DataCSV & Refrence Summaries")
+    directory_name = os.path.join(desktop_path, "DataCSV1 & Refrence Summaries")
 
     # Create the directory
     try:
@@ -306,13 +312,20 @@ def main():
                     examinerNumber = str(obj.phone_numbers)[24:-2]
                     print("Examiner #: " + examinerNumber)
 
-                rows.append([obj.applicationID, obj.refrenceNumber, "", obj.dueDate, "", "", examinerRealName, examinerNumber])
-
                 # print("All refrence #s: " + str(obj.total_refs))
 
                 print("Pulled refs:" + str(obj.total_pulled_refs))
 
                 # exit()
+
+                print("Final? " + str(obj.totalFinalTypes))
+
+                if len(obj.totalFinalTypes) != 0:
+                    type = "FOA Response 2mo"
+                else:
+                    type = "OA Response"
+
+                rows.append([obj.applicationID, obj.refrenceNumber, type, obj.dueDate, "", "", examinerRealName, examinerNumber])
 
                 #here generate summary and put in subfolder_path
 
