@@ -2,10 +2,10 @@
 
 block_cipher = None
 
-a = Analysis(['drag_drop_oa.py'],
+a = Analysis(['run_oa_processor.py'],
              pathex=[],
              binaries=[],
-             datas=[('oa_processor.py', '.')],
+             datas=[('oa_processor.py', '.'), ('.env', '.')],  # Include .env file
              hiddenimports=['openai'],
              hookspath=[],
              hooksconfig={},
